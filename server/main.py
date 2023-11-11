@@ -28,18 +28,19 @@ async def root():
 
 @app.get("/stream/driving")
 async def data_stream(request: Request):
-    file_path = os.path.join(os.path.dirname(__file__), '..', 'data', '2023-11-11T16-57-48_Pixie27023_Junction-sushicat', 'AFE_000_uploaded.json')
+    file_path = os.path.join(os.path.dirname(__file__), '..', 'data', '2023-11-11T16-57-48_Pixie27023_Junction-sushicat', 'labeled.json')
 
     async def event_generator():
         with open(file_path, "rb") as f:
             last_timestamp = -1
             for record in ijson.items(f, "item"):
+                start = current_milli_time()
                 if await request.is_disconnected():
                     break
                 current_timestamp = record['afe'][0]['i'][1]
                 time_to_wait_microseconds = current_timestamp - last_timestamp if last_timestamp != -1 else 0
                 last_timestamp = current_timestamp
-                await asyncio.sleep(time_to_wait_microseconds / 1000000)
+                await asyncio.sleep(time_to_wait_microseconds / 1000000 - (current_milli_time() - start) / 1000 - 0.001) # lol. constant delay to sync with the video on Kamil's computer
                 yield {
                     "event": "data",
                     "data": json.dumps({

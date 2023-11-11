@@ -13,6 +13,7 @@ export interface Afe {
 
 interface Raw {
   afe: [Afe, Afe];
+  labels?: string[];
 }
 
 export interface SSEData {

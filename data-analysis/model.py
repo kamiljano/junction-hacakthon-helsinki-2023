@@ -216,14 +216,14 @@ class GlassData:
             gps = np.append(gps, gp)
         return times, gps
 
-dataset = "indoor"
+dataset = "recorded"
 
 if dataset == "indoor":
     indoor12 = GlassData(['Indoor/Participant_1/AFE_000_CONFIDENTIAL.json',
                            'Indoor/Participant_1/AFE_001_CONFIDENTIAL.json',
                            'Indoor/Participant_1/AFE_002_CONFIDENTIAL.json',
                            'Indoor/Participant_1/AFE_003_CONFIDENTIAL.json'])
-else:
+elif dataset == "recorded":
     indoor1 = GlassData(["labeled.json"])
 
 timesTI1, tempRates_indoor1 = indoor1.tempRates()

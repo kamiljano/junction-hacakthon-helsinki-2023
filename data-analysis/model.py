@@ -216,11 +216,15 @@ class GlassData:
             gps = np.append(gps, gp)
         return times, gps
 
-#indoor12 = GlassData(['Indoor/Participant_1/AFE_000_CONFIDENTIAL.json',
-#                       'Indoor/Participant_1/AFE_001_CONFIDENTIAL.json',
-#                       'Indoor/Participant_1/AFE_002_CONFIDENTIAL.json',
-#                       'Indoor/Participant_1/AFE_003_CONFIDENTIAL.json'])
-indoor1 = GlassData(["labeled.json"])
+dataset = "indoor"
+
+if dataset == "indoor":
+    indoor12 = GlassData(['Indoor/Participant_1/AFE_000_CONFIDENTIAL.json',
+                           'Indoor/Participant_1/AFE_001_CONFIDENTIAL.json',
+                           'Indoor/Participant_1/AFE_002_CONFIDENTIAL.json',
+                           'Indoor/Participant_1/AFE_003_CONFIDENTIAL.json'])
+else:
+    indoor1 = GlassData(["labeled.json"])
 
 timesTI1, tempRates_indoor1 = indoor1.tempRates()
 timesTI2, reyeX_indoor1, reyeY_indoor1, leyeX_indoor1, leyeY_indoor1, rbrightness, lbrightness = indoor1.eyePositions()

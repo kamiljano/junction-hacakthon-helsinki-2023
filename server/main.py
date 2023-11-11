@@ -28,17 +28,21 @@ async def data_stream(request: Request):
 
     async def event_generator():
         with open(file_path, "rb") as f:
+            last_timestamp = -1
             for record in ijson.items(f, "item"):
                 if await request.is_disconnected():
                     break
-                print("Sending event", record)
+                current_timestamp = record['afe'][0]['i'][1]
+                time_to_wait_microseconds = current_timestamp - last_timestamp if last_timestamp != -1 else 0
+                last_timestamp = current_timestamp
+                print(time_to_wait_microseconds)
+                await asyncio.sleep(time_to_wait_microseconds / 1000000)
                 yield {
                     "event": "data",
                     #"id": "message_id",
-                    "data": json.dumps(record)
+                    "data": json.dumps({
+                        'raw': record
+                    })
                 }
-
-                # TODO: figure out the right sleep time
-                await asyncio.sleep(1)
 
     return EventSourceResponse(event_generator())

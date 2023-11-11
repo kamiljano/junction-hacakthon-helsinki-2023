@@ -44,8 +44,8 @@ export default function Angel({ blinkCount }: AngelProps) {
       img: '/angel3.png',
       bottom: 100,
       left: 100,
-      width: 300,
-      height: 300,
+      width: 400,
+      height: 400,
     },
     {
       img: '/angel4.jpg',

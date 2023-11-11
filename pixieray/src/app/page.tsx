@@ -1,26 +1,19 @@
 'use client';
 
 import {useEffect, useState} from "react";
-import { Chart } from "react-google-charts";
-import {Afe, SSEData} from "@/app/event";
+import {Afe, SSEData} from "./event";
+import EyeChart, {EyeData} from "@/app/EyeChart";
 
 const MAX_ENTRIES_ON_CHART = 100;
 
-const options = {
-  chart: {
-    title: "Sensors",
-  },
-};
-
-const calculateOneEyeSum = (afe: Afe): number => {
-  return afe.m[0][0] + afe.m[0][1] + afe.m[0][2] + afe.m[0][3] + afe.m[0][4] + afe.m[0][5];
-}
-
-const calculateSum = (afe: [Afe, Afe]): number => calculateOneEyeSum(afe[0]) + calculateOneEyeSum(afe[1]);
+const toEyeData = (afe: Afe): EyeData => ({
+  timestamp: afe.i[1],
+  position: afe.m[0]
+});
 
 export default function Home() {
 
-  const [data, setData] = useState<[number, number][]>([]);
+  const [data, setData] = useState<SSEData[]>([]);
 
   useEffect(() => {
     const eventSource = new EventSource("http://localhost:8000/stream/driving", {
@@ -29,13 +22,13 @@ export default function Home() {
     eventSource.addEventListener('data', (event) => {
       const record: SSEData = JSON.parse(event.data);
       console.log(record);
-      data.push([record.raw.afe[0].i[1], calculateSum(record.raw.afe)])
+      data.push(record);
 
       if (data.length > MAX_ENTRIES_ON_CHART) {
         data.shift();
       }
 
-      setData([...data ])
+      setData([...data])
     })
     eventSource.onerror = (err) => {
       console.error(err);
@@ -44,20 +37,15 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Chart
-        chartType="Line"
-        width="100%"
-        height="400px"
-        data={[
-          [
-            "Timestamp",
-            "Sensor sum",
-          ],
-          ...data
-        ]}
-        options={options}
-      />
+    <main className="flex min-h-screen flex-col items-center justify-between p-6">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <EyeChart eye="Left" data={data.map(d => toEyeData(d.raw.afe[0]))}/>
+        </div>
+        <div>
+          <EyeChart eye="Right" data={data.map(d => toEyeData(d.raw.afe[1]))}/>
+        </div>
+      </div>
     </main>
   )
 }

@@ -1,7 +1,11 @@
+export type EyePosition = [number, number, number, number, number, number]
+
+export type TimestampInMicroseconds = number;
+
 export interface Afe {
-  i: [number, number, number, number];
+  i: [number, TimestampInMicroseconds, number, number];
   m: [
-    [number, number, number, number, number, number],
+    EyePosition,
     []
   ],
   t: 'L' | 'R';
